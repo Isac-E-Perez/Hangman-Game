@@ -7,27 +7,149 @@ For this project, I implemented an hangman game using Python. I used the librari
 
 First, I created the invite initiation for the start of the game.
 
-![Screen Shot 2021-10-04 at 1 00 05 PM](https://user-images.githubusercontent.com/89553126/135900955-8d9399ba-dd28-4cf1-be21-411eef82bf1e.png)
+```python
+import random  # Generate pseudo-random numbers
+import time  # Allows to handle various operations regarding time, its conversions and representations
+
+# The starting screen
+print("Hangman")  # Title: output string
+name = input("Enter your name: ")  # made the variable 'name' equal the imput
+print("Hello " + name + ". You got this! Start guessing the word!")  # Strings can be glued together with the +
+time.sleep(2)  # function suspends (waits) execution of the current thread for a given number of seconds.
+print("The game is about to start.")
+time.sleep(3)
+```
 
 Afterwards, I defined the main function of the code. I defined the main function that initializes the arguments: global count, global display, global word, global already_guessed, global length and global play_game. They could be used further in other functions depending on how I want to call them.
 
-![Screen Shot 2021-10-04 at 1 07 42 PM](https://user-images.githubusercontent.com/89553126/135901943-1dd268d9-70e3-4499-ad92-70cd0cfd2c4a.png)
+```python
+def main():  # Global variable can be accessed inside or outside of the function.
+    global count
+    global screen
+    global statement
+    global again
+    global lens
+    global start
+    hangman_words = ["python", "java", "computer", "languages", "career"]
+    statement = random.choice(hangman_words)  # Returns a randomly selected value from the list
+    lens = len(statement)  # length of the string
+    count = 0  # starts at zero
+    screen = '_' * lens  # strings can be repeated with *
+    again = []  # provides the indices of the correctly guessed string
+    start = ""
+```
 
 Then I developed the loop to execute the game multiple times.
 
-![Screen Shot 2021-10-04 at 1 08 59 PM](https://user-images.githubusercontent.com/89553126/135902105-8fec0b9f-5af7-4a80-894a-a83aa1317262.png)
+```python
+# loop development
+
+
+def start_loop():  # def marks the start of the function header. The function name to uniquely identify the function.
+    global start
+    start = input("Do you want to re-play? \n y = yes, \n n = no\n")
+    while start not in ["y", "n", "Y", "N"]:  # list
+        start = input("Do you want to play again? \nyes or no")
+    if start == "y":
+        main()
+    elif start == "n":
+        print("Gameover")
+        exit()  # exit out of game
+```
 
 Including initialized conditions for hangman game. I call all the arguments again under the *hangman* function. The limit is used to set the maximum amount of guesses I provide to the user to guess a particular word.  
 
-![Screen Shot 2021-10-04 at 1 12 18 PM](https://user-images.githubusercontent.com/89553126/135902632-48c96627-77ad-42e7-a710-defcc1fed682.png)
+```python
+# conditions for gameplay
+
+def hangman():
+    global count
+    global screen
+    global statement
+    global again
+    global start
+    limit = 3  # amount of guesses
+    the_guess = input("Hangman word: " + screen + "Enter your guess: \n")
+    the_guess = the_guess.strip()  # method removes any leading (spaces at the beginning) and trailing (spaces at the end) characters (space is the default leading character to remove)
+    if len(the_guess.strip()) == 0 or len(the_guess.strip()) >= 2 or the_guess <= "9":  # limiting the amount of strings inputted
+        print("Try a better response. No integers.")
+        hangman()
+
+    elif the_guess in statement:
+        again.extend([the_guess])  # method adds all the elements of an iterable (list, tuple, string etc.) to the end of the list.
+        index = statement.find(the_guess)  # method finds the first occurrence of the specified value.
+        statement = statement[:index] + "_" + statement[index + 1:]  # an omitted first index defaults to zero, an omitted second index defaults to the size of the string being sliced.
+        screen = screen[:index] + the_guess + screen[index + 1:]
+        print(screen + "\n")
+
+    elif the_guess in again:
+        print("Another letter")
+
+    else:
+        count += 1
+```
 
 Finally,  the rest of the hangman program combined together.
 
-![Screen Shot 2021-10-04 at 1 12 30 PM](https://user-images.githubusercontent.com/89553126/135902635-eaaee6cc-6f5a-4153-b2bd-11a085e0f3fe.png)
+```python
+    if count == 1:
+        print("""\
+                
+                 --------
+                 |      |
+                 |      |
+                 |
+                 |
+                 |
+                 |
+                _|_
+                
+                """)
+        print("Wrong guess. " + str(limit - count) + " guesses remaining\n")
 
-![Screen Shot 2021-10-04 at 1 12 39 PM](https://user-images.githubusercontent.com/89553126/135902637-d46bd5d8-b227-4ccd-b9aa-008322dc4d62.png)
+    elif count == 2:
+        time.sleep(1)
+        print("""\
+                 --------
+                 |      |
+                 |      |
+                 |      o
+                 |     /|\  
+                 |
+                 |
+                _|_
+                
+                """)
 
-![Screen Shot 2021-10-04 at 1 12 53 PM](https://user-images.githubusercontent.com/89553126/135902638-1ed47b64-7445-45c4-87ba-cfade243b3e4.png)
+    elif count == 3:
+        time.sleep(2)
+        print("""\
+                 --------
+                 |      |
+                 |      |
+                 |      o
+                 |     /|\  
+                 |      |
+                 |     / -
+                _|_
+                
+                """)
+
+        print("Wrong guess. You lose!")
+        print("The word was:  ", again, statement)  # printing out the functions again and statement
+        start_loop()  # sends user back to the start of the start_loop
+    if statement == '_' * lens:
+        print("Lets go! You guessed correctly!")
+        start_loop()
+
+    elif count != limit:  # not equal to
+        hangman()
+
+
+main()  # calls back the main loop
+
+hangman()
+```
 
 If the letter is correclty guessed, index seraches for that letter in the word while display adds that letter in the given space according to its index or where itbelongs in the given word.
 
